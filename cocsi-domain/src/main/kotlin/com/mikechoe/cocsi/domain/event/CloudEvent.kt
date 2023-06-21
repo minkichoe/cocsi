@@ -1,3 +1,5 @@
+package com.mikechoe.cocsi.domain.event
+
 interface CloudEvent<T> : Event {
     val id: String
 
