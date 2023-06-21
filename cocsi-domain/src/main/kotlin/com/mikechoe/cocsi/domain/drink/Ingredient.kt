@@ -1,8 +1,10 @@
 package com.mikechoe.cocsi.domain.drink
 
+import com.mikechoe.cocsi.domain.price.Price
+
 class Ingredient(
     val id: Long,
     val name: String,
-    val caloryPerMilligram: Double,
-    val pricePerMilligram: Double,
+    val caloriePerMilligram: Double,
+    val pricePerMilligram: Price,
 )
