@@ -1,4 +1,4 @@
-package com.mikechoe.cocsi.domain.price
+package com.cocsi.domain.price
 
 enum class Currency {
     CURRENCY_UNSPECIFIED,

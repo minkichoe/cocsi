@@ -1,4 +1,4 @@
-package com.mikechoe.cocsi.domain.drink
+package com.cocsi.domain.drink
 
 class Drink(
     val id: Long,

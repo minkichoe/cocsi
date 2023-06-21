@@ -1,4 +1,4 @@
-package com.mikechoe.cocsi.domain.event
+package com.cocsi.domain.event
 
 import java.time.LocalDateTime
 

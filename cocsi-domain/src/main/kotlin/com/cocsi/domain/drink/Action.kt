@@ -1,4 +1,4 @@
-package com.mikechoe.cocsi.domain.drink
+package com.cocsi.domain.drink
 
 enum class Action {
     ACTION_UNSPECIFIED,

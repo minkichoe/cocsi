@@ -1,4 +1,4 @@
-package com.mikechoe.cocsi.domain.price
+package com.cocsi.domain.price
 
 data class Price(
     val amount: Long,
