@@ -1,52 +1,73 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "3.1.0"
-	id("io.spring.dependency-management") version "1.1.0"
-	kotlin("jvm") version "1.8.21"
-	kotlin("plugin.spring") version "1.8.21"
+    id("org.springframework.boot") version "3.1.0"
+    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.spring") version "1.8.21"
+    kotlin("kapt") version "1.8.21"
+    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 }
 
-group = "com.mikechoe"
+group = "com.cocsi"
 version = "0.0.1-SNAPSHOT"
-
-java {
-	sourceCompatibility = JavaVersion.VERSION_17
-}
-
-repositories {
-	mavenCentral()
-}
 
 extra["springCloudGcpVersion"] = "4.5.0"
 extra["springCloudVersion"] = "2022.0.3"
 
-dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-	implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
-	implementation("com.google.cloud:spring-cloud-gcp-starter-pubsub")
-	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("io.projectreactor:reactor-test")
+allprojects {
+    apply(plugin = "idea")
+    apply(plugin = "kotlin")
+    apply(plugin = "kotlin-kapt")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+    }
+
+    dependencies {
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+        implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+        implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+        implementation("com.google.cloud:spring-cloud-gcp-starter-pubsub:4.5.0")
+
+        testImplementation("io.projectreactor:reactor-test")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs += "-Xjsr305=strict"
+            jvmTarget = "17"
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+
+    tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask> {
+        workerMaxHeapSize.set("512m")
+    }
 }
 
-dependencyManagement {
-	imports {
-		mavenBom("com.google.cloud:spring-cloud-gcp-dependencies:${property("springCloudGcpVersion")}")
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-	}
+var libprojects = allprojects.filter {
+    it.findProperty("type").toString().contains("lib")
 }
+configure(libprojects) {
+    apply(plugin = "org.springframework.boot")
+    val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
+    bootJar.enabled = false
 
-tasks.withType<KotlinCompile> {
-	kotlinOptions {
-		freeCompilerArgs += "-Xjsr305=strict"
-		jvmTarget = "17"
-	}
-}
+    val jar: Jar by tasks
 
-tasks.withType<Test> {
-	useJUnitPlatform()
+    jar.enabled = true
 }
